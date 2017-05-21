@@ -37,13 +37,14 @@ scene.AxisContainer = {};
 local UnitCell = require 'UnitCell';
 local Animation = require 'Animation'
 local CameraController = require 'CameraController'
+local Draw = require 'Draw'
 
 local Rutile = UnitCell:new();
 local Monoclinic = UnitCell:new();
 
 --Data from "Structural Relations between the VO2 phases"
 
-local ar = Vector3(-4.5546, 0, 0);
+local ar = Vector3(4.5546, 0, 0);
 local br = Vector3(0, 4.5546, 0);
 local cr = Vector3(0, 0, -2.8514);
 
@@ -60,6 +61,7 @@ local cm = Vector3(cmx, cmy, cmz);--]]
 local am = Vector3(0,0,5.743);
 local bm = Vector3(4.517,0,0);
 local angle = 122.61;
+--local angle = 90
 local lambda = 5.375;
 
 local cmz = math.cos(angle/180*math.pi)*lambda*am:length()/am.z;
@@ -75,14 +77,14 @@ local ORadius = 0.2;
 Rutile:SetLatticeVectors(ar,br,cr);
 Monoclinic:SetLatticeVectors(am,bm,cm);
 
-function Monoclinic:PostDraw(base)
+--[[function Monoclinic:PostDraw(base)
 	base:setRoll(90)
 	base:setYaw(90)
 	print("hi")
-end
+end--]]
 
-Rutile:SetColor("Vanadium", 0,1,0,0.8);
-Rutile:SetColor("Oxygen", 0,0,1,0.8);
+Rutile:SetColor("Vanadium", 0,1,1,0.8);
+Rutile:SetColor("Oxygen", 1,0,1,0.8);
 
 Monoclinic:SetColor("Vanadium", 0,1,0,0.8);
 Monoclinic:SetColor("Oxygen", 0,0,1,0.8);
@@ -152,14 +154,7 @@ end--]]
 --Rutile:DrawCell(0,0,1 ,scene);
 --Rutile:DrawCell(0,1,1 ,scene);
 
---Rutile:DrawCell(0,0,0, scene);
-Monoclinic:DrawCell(0,0,0,scene)
---Monoclinic:DrawCell(0,0,1, scene);
---Monoclinic:DrawCell(0,1,1, scene);
---Monoclinic:DrawCell(0,1, 0, scene);
-
-Rutile:DrawCell(-1,-3,-1,scene);
-Rutile:DrawCell(-1,-3,0,scene)
+local UpdateFunc = Draw.ShowTransition(Rutile, Monoclinic, scene)
 
 print("Monoclinic content: ");
 Monoclinic:CountAtoms();
@@ -265,7 +260,16 @@ Services.Input:addEventListener(nil, keyUp, InputEvent.EVENT_KEYUP);
 
 t = 0;
 
+scene:getDefaultCamera():setPosition(5,5,20)
+--scene:getDefaultCamera():lookAt(Vector3(0, 0, 0), Vector3(0, 1, 0))
+
+--CameraController.Pitch = Cam:getPitch();
+--CameraController.Yaw = Cam:getYaw();
+
 function Update(elapsed)
+	if UpdateFunc then
+		UpdateFunc(elapsed)
+	end
 	t = t + elapsed;
 
 	for i,v in pairs(down) do

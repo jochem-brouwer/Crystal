@@ -62,6 +62,8 @@ function UnitCell:DrawCell(OffsetX, OffsetY, OffsetZ, scn)
 		self:PostDraw(base)
 	end
 
+	local out = {};
+
 	local a,b,c = self.LatticeVectors.a, self.LatticeVectors.b, self.LatticeVectors.c
 	local OffsetVec = vmul(OffsetX,a) + vmul(OffsetY,b) + vmul(OffsetZ,c);
 	for _, Atom in pairs(self.Atoms) do
@@ -86,6 +88,9 @@ function UnitCell:DrawCell(OffsetX, OffsetY, OffsetZ, scn)
 		local function mdown() print('xd') MouseDown(Sphere, Atom) end
 		Sphere:addEventListener(nil, mdown,InputEvent.EVENT_MOUSEDOWN);--]]
 		scn:addEntity(Sphere);
+		
+		local obj = {Type = Atom.Type; Pos = WPos, Entity = Sphere};
+		table.insert(out, obj);
 	end
 
 	local A_Axis = ScenePrimitive(ScenePrimitive.TYPE_CYLINDER, a:length(), 0.05, 6);
@@ -120,6 +125,10 @@ function UnitCell:DrawCell(OffsetX, OffsetY, OffsetZ, scn)
 	A_Axis:setParentEntity(base);
 	B_Axis:setParentEntity(base);
 	C_Axis:setParentEntity(base);
+
+	local axis = {A_Axis, B_Axis, C_Axis};
+	
+	return out, axis
 end
 
 return UnitCell;
